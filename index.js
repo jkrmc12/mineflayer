@@ -96,6 +96,7 @@ class Bot extends EventEmitter {
       self.emit('end')
     })
     self._client.on('forgeMods', (mods) => {
+      self.mods = mods
       self.emit('forgeMods', mods)
     })
     if (!self._client.wait_connect) next()
