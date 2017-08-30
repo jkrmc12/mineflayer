@@ -32,6 +32,7 @@ const plugins = {
   villager: require('./lib/plugins/villager')
 }
 const supportedVersions = require('./lib/version').supportedVersions
+const autoVersionForge = require('minecraft-protocol-forge').autoVersionForge
 
 module.exports = {
   createBot,
@@ -78,6 +79,9 @@ class Bot extends EventEmitter {
   connect (options) {
     const self = this
     self._client = mc.createClient(options)
+    if (!options.version) {
+      autoVersionForge(self._client)
+    }
     self.username = self._client.username
     self._client.on('session', () => {
       self.username = self._client.username
@@ -90,6 +94,9 @@ class Bot extends EventEmitter {
     })
     self._client.on('end', () => {
       self.emit('end')
+    })
+    self._client.on('forgeMods', (mods) => {
+      self.emit('forgeMods', mods)
     })
     if (!self._client.wait_connect) next()
     else self._client.once('connect_allowed', next)
